@@ -116,7 +116,7 @@ ifeq ("$(CPU)","NONE")
 endif
 
 # base CFLAGS, LDLIBS, and LDFLAGS
-OPTFLAGS ?= -O3 -flto
+OPTFLAGS ?= -O2 -flto
 WARNFLAGS ?= -Wall
 CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I../../src
 LDFLAGS += $(SHARED)
@@ -295,6 +295,10 @@ rebuild: clean all
 # build dependency files
 CFLAGS += -MD -MP
 -include $(OBJECTS:.o=.d)
+
+#custom build jpeg.c as it will not -O3 optimize on the pi
+$(OBJDIR)/jpeg.o: $(SRCDIR)/jpeg.c
+	$(patsubst -O3, -O2, $(COMPILE.c)) -o $@ $<
 
 # standard build rules
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
